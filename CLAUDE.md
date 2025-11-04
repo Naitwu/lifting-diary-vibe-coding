@@ -13,7 +13,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
    - MUST use date-fns for all date formatting
    - NEVER create custom UI primitives
 
-**ENFORCEMENT**: Before writing any code, review the relevant documentation in `/docs`. Non-compliance with these specifications is unacceptable.
+2. **`/docs/data-fetching.md`** - Data fetching and security guidelines (CRITICAL)
+   - MUST fetch data ONLY through Server Components
+   - MUST use helper functions in `/data` directory with Drizzle ORM
+   - MUST filter all queries by userId (critical security requirement)
+   - NEVER use Route Handlers, Client Components, or raw SQL for data fetching
+
+**ENFORCEMENT**: Before writing any data fetching code, review `/docs/data-fetching.md` and strictly follow all requirements. Non-compliance with these specifications is unacceptable and poses security risks.
 
 ## Project Overview
 
@@ -80,6 +86,7 @@ npm run lint
 ## Key Conventions
 
 - **Documentation compliance is mandatory**: All code MUST adhere to specifications in `/docs` directory
+- **Data fetching**: ONLY via Server Components + `/data` helpers (see `/docs/data-fetching.md`) - this is critical for security
 - All pages and components use TypeScript with `.tsx` extension
 - Server Components by default (App Router behavior)
 - CSS modules and Tailwind utility classes for styling

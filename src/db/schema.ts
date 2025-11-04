@@ -11,8 +11,8 @@ import { relations } from "drizzle-orm";
 export const exercises = pgTable("exercises", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: varchar({ length: 255 }).notNull().unique(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 // 訓練記錄表
@@ -20,10 +20,10 @@ export const workouts = pgTable("workouts", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   userId: varchar("user_id", { length: 255 }).notNull(), // Clerk user ID
   name: varchar({ length: 255 }).notNull(),
-  startedAt: timestamp("started_at").notNull(),
-  completedAt: timestamp("completed_at"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  startedAt: timestamp("started_at", { withTimezone: true }).notNull(),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 // 訓練-運動關聯表
@@ -36,7 +36,7 @@ export const workoutExercises = pgTable("workout_exercises", {
     .notNull()
     .references(() => exercises.id),
   order: integer().notNull(), // 在訓練中的執行順序
-  createdAt: timestamp("created_at").notNull().defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 // 組數記錄表
@@ -48,7 +48,7 @@ export const sets = pgTable("sets", {
   setNumber: integer("set_number").notNull(), // 組數編號 (1, 2, 3...)
   weightKg: decimal("weight_kg", { precision: 6, scale: 2 }).notNull(), // 重量(公斤)
   reps: integer().notNull(), // 次數
-  createdAt: timestamp("created_at").notNull().defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 // 定義關聯關係 (用於 Drizzle 查詢)

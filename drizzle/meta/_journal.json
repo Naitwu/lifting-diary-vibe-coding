@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1762265696186,
+      "tag": "0000_military_night_thrasher",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1762270000000,
+      "tag": "0001_add_timezone_to_timestamps",
+      "breakpoints": true
+    }
+  ]
+}
