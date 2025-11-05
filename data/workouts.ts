@@ -61,3 +61,28 @@ export async function getWorkoutByIdForUser(userId: string, workoutId: number) {
 
   return results[0] || null;
 }
+
+/**
+ * Create a new workout for a specific user
+ * SECURITY: Always associates workout with the provided userId
+ */
+export async function createWorkoutForUser(
+  userId: string,
+  data: {
+    name: string;
+    startedAt: Date;
+    completedAt?: Date | null;
+  }
+) {
+  const results = await db
+    .insert(workouts)
+    .values({
+      userId,
+      name: data.name,
+      startedAt: data.startedAt,
+      completedAt: data.completedAt || null,
+    })
+    .returning();
+
+  return results[0];
+}

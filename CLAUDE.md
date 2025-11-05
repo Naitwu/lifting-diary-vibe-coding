@@ -19,7 +19,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
    - MUST filter all queries by userId (critical security requirement)
    - NEVER use Route Handlers, Client Components, or raw SQL for data fetching
 
-**ENFORCEMENT**: Before writing any data fetching code, review `/docs/data-fetching.md` and strictly follow all requirements. Non-compliance with these specifications is unacceptable and poses security risks.
+3. **`/docs/data-mutations.md`** - Data mutation and Server Actions guidelines (CRITICAL)
+   - MUST perform ALL data mutations through helper functions in `/data` directory
+   - MUST define Server Actions in colocated `actions.ts` files (NOT centralized directories)
+   - MUST use strongly-typed parameters (NEVER accept FormData directly)
+   - MUST validate all inputs with Zod schemas
+   - NEVER use direct ORM calls outside `/data` directory
+   - NEVER use API Route Handlers for mutations
+
+4. **`/docs/auth.md`** - Authentication and authorization guidelines (CRITICAL)
+   - MUST use Clerk for ALL authentication operations
+   - MUST use server-side `auth()` from `@clerk/nextjs/server` for protected operations
+   - MUST filter ALL database queries by userId (critical security requirement)
+   - MUST use Clerk's pre-built components (`SignInButton`, `SignUpButton`, `UserButton`)
+   - NEVER implement custom authentication or bypass Clerk
+   - NEVER rely on client-side auth checks for security
+
+**ENFORCEMENT**: Before writing any authentication, data fetching, or data mutation code, review the relevant documentation in `/docs` and strictly follow all requirements. Non-compliance with these specifications is unacceptable and poses critical security risks.
 
 ## Project Overview
 
@@ -86,7 +102,9 @@ npm run lint
 ## Key Conventions
 
 - **Documentation compliance is mandatory**: All code MUST adhere to specifications in `/docs` directory
+- **Authentication**: ONLY via Clerk with server-side validation (see `/docs/auth.md`) - this is critical for security
 - **Data fetching**: ONLY via Server Components + `/data` helpers (see `/docs/data-fetching.md`) - this is critical for security
+- **Data mutations**: ONLY via `/data` helpers + colocated Server Actions with Zod validation (see `/docs/data-mutations.md`) - this is critical for security
 - All pages and components use TypeScript with `.tsx` extension
 - Server Components by default (App Router behavior)
 - CSS modules and Tailwind utility classes for styling

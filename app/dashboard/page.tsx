@@ -3,7 +3,8 @@ import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { formatDate, formatTime, calculateDuration, formatDuration } from '@/lib/utils/date'
-import { CalendarIcon, Clock } from 'lucide-react'
+import { CalendarIcon, Clock, Plus } from 'lucide-react'
+import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { WorkoutCalendar } from './_components/workout-calendar'
 import { getWorkoutsForUserOnDate } from '@/data/workouts'
@@ -73,12 +74,20 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         {/* Workouts List Section */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold tracking-tight">
-              Workouts for {formatDate(selectedDate)}
-            </h2>
-            <span className="text-sm text-muted-foreground">
-              {workouts.length} {workouts.length === 1 ? 'workout' : 'workouts'} found
-            </span>
+            <div className="flex items-center gap-4">
+              <h2 className="text-2xl font-semibold tracking-tight">
+                Workouts for {formatDate(selectedDate)}
+              </h2>
+              <span className="text-sm text-muted-foreground">
+                {workouts.length} {workouts.length === 1 ? 'workout' : 'workouts'} found
+              </span>
+            </div>
+            <Link href="/dashboard/workout/new">
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                New Workout
+              </Button>
+            </Link>
           </div>
 
           {/* Empty State */}
