@@ -1,1 +1,1 @@
-commit所有改變到現在的branch上，並依照改變的內容給出一個簡潔合適的commit message(不要提到claude code)，並merge現處branch到main branch同時解決所有遇到的merge issue，最後建立新branch called $ARGUMENTS
+commit所有改變到現在的branch上，並依照改變的內容給出一個簡潔合適的commit message(不要提到claude code)，並merge現處branch到main branch同時解決所有遇到的merge issue，將合併完的main branch push到github，最後建立新branch called $ARGUMENTS

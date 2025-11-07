@@ -86,3 +86,33 @@ export async function createWorkoutForUser(
 
   return results[0];
 }
+
+/**
+ * Update a workout for a specific user
+ * SECURITY: Always filters by userId to ensure data isolation
+ */
+export async function updateWorkoutForUser(
+  userId: string,
+  workoutId: number,
+  data: {
+    name?: string;
+    startedAt?: Date;
+    completedAt?: Date | null;
+  }
+) {
+  const results = await db
+    .update(workouts)
+    .set({
+      ...data,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(workouts.userId, userId),
+        eq(workouts.id, workoutId)
+      )
+    )
+    .returning();
+
+  return results[0] || null;
+}

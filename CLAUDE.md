@@ -35,6 +35,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
    - NEVER implement custom authentication or bypass Clerk
    - NEVER rely on client-side auth checks for security
 
+5. **`/docs/routing.md`** - Routing architecture and route protection guidelines (CRITICAL)
+   - MUST place ALL application routes under `/dashboard` path
+   - MUST protect `/dashboard` and ALL sub-routes via middleware in `proxy.ts`
+   - MUST use Clerk's `clerkMiddleware()` with `createRouteMatcher()` for route protection
+   - MUST implement server-side route guards (client-side checks are NOT sufficient)
+   - MUST redirect authenticated users to `/dashboard` after sign-in/sign-up
+   - NEVER bypass middleware protection for dashboard routes
+   - NEVER rely solely on client-side auth checks for route protection
+
 **ENFORCEMENT**: Before writing any authentication, data fetching, or data mutation code, review the relevant documentation in `/docs` and strictly follow all requirements. Non-compliance with these specifications is unacceptable and poses critical security risks.
 
 ## Project Overview
@@ -103,6 +112,7 @@ npm run lint
 
 - **Documentation compliance is mandatory**: All code MUST adhere to specifications in `/docs` directory
 - **Authentication**: ONLY via Clerk with server-side validation (see `/docs/auth.md`) - this is critical for security
+- **Routing**: ALL app routes under `/dashboard` with middleware protection (see `/docs/routing.md`) - this is critical for security
 - **Data fetching**: ONLY via Server Components + `/data` helpers (see `/docs/data-fetching.md`) - this is critical for security
 - **Data mutations**: ONLY via `/data` helpers + colocated Server Actions with Zod validation (see `/docs/data-mutations.md`) - this is critical for security
 - All pages and components use TypeScript with `.tsx` extension
