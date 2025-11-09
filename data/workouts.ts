@@ -116,3 +116,24 @@ export async function updateWorkoutForUser(
 
   return results[0] || null;
 }
+
+/**
+ * Delete a workout for a specific user
+ * SECURITY: Always filters by userId to ensure data isolation
+ */
+export async function deleteWorkoutForUser(
+  userId: string,
+  workoutId: number
+) {
+  const results = await db
+    .delete(workouts)
+    .where(
+      and(
+        eq(workouts.userId, userId),
+        eq(workouts.id, workoutId)
+      )
+    )
+    .returning();
+
+  return results[0] || null;
+}

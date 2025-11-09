@@ -1,52 +1,32 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { updateWorkout, deleteWorkout, type UpdateWorkoutInput, type DeleteWorkoutInput } from '../actions'
+import { updateWorkout, type UpdateWorkoutInput } from '../actions'
 import { format } from 'date-fns'
+import type { Workout } from '@/types/workout'
 
-/**
- * Workout edit form component
- * Following /docs/ui.md guidelines:
- * - Using shadcn/ui components only
- * - Using date-fns for date formatting
- */
-
-type Workout = {
-  id: number
-  userId: string
-  name: string
-  startedAt: Date
-  completedAt: Date | null
-  createdAt: Date
-  updatedAt: Date
-}
-
-interface WorkoutEditFormProps {
+interface WorkoutEditDialogProps {
   workout: Workout
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export function WorkoutEditForm({ workout }: WorkoutEditFormProps) {
-  const router = useRouter()
+export function WorkoutEditDialog({ workout, open, onOpenChange }: WorkoutEditDialogProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isCompleted, setIsCompleted] = useState(!!workout.completedAt)
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   // Format dates for form inputs
   const formatDateForInput = (date: Date) => format(date, 'yyyy-MM-dd')
@@ -73,7 +53,6 @@ export function WorkoutEditForm({ workout }: WorkoutEditFormProps) {
       const endTime = formData.get('endTime') as string
 
       // Combine date and time into ISO datetime strings
-      // Keep in local timezone format (YYYY-MM-DDTHH:mm:ss) without timezone indicator
       const startedAt = `${startDate}T${startTime}:00`
       const completedAt = isCompleted && endDate && endTime
         ? `${endDate}T${endTime}:00`
@@ -86,55 +65,29 @@ export function WorkoutEditForm({ workout }: WorkoutEditFormProps) {
         completedAt,
       }
 
-      // Call Server Action
-      // Following /docs/data-mutations.md guidelines:
-      // - Using Server Action with strongly-typed parameters
       const result = await updateWorkout(input)
 
-      // Handle successful update with client-side redirect
       if (result.success) {
-        router.push('/dashboard')
+        onOpenChange(false)
+        setError(null)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
+    } finally {
       setIsLoading(false)
-    }
-  }
-
-  async function handleDelete() {
-    setIsLoading(true)
-    setError(null)
-
-    try {
-      const input: DeleteWorkoutInput = {
-        workoutId: workout.id,
-      }
-
-      // Call Server Action
-      // Following /docs/data-mutations.md guidelines:
-      // - Using Server Action with strongly-typed parameters
-      const result = await deleteWorkout(input)
-
-      // Handle successful deletion with client-side redirect
-      if (result.success) {
-        router.push('/dashboard')
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-      setIsLoading(false)
-      setShowDeleteDialog(false)
     }
   }
 
   return (
-    <Card className="mx-auto max-w-2xl">
-      <CardHeader>
-        <CardTitle>Edit Workout</CardTitle>
-        <CardDescription>
-          Update the details of your workout session
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Edit Workout</DialogTitle>
+          <DialogDescription>
+            Update the details of your workout session
+          </DialogDescription>
+        </DialogHeader>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Workout Name */}
           <div className="space-y-2">
@@ -242,61 +195,25 @@ export function WorkoutEditForm({ workout }: WorkoutEditFormProps) {
             </div>
           )}
 
-          {/* Form Actions */}
-          <div className="flex flex-col gap-4">
-            <div className="flex gap-4">
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="flex-1"
-              >
-                {isLoading ? 'Updating...' : 'Update Workout'}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.back()}
-                disabled={isLoading}
-              >
-                Cancel
-              </Button>
-            </div>
-
-            {/* Delete Button */}
+          {/* Dialog Footer */}
+          <DialogFooter>
             <Button
               type="button"
-              variant="destructive"
-              onClick={() => setShowDeleteDialog(true)}
+              variant="outline"
+              onClick={() => onOpenChange(false)}
               disabled={isLoading}
-              className="w-full"
             >
-              Delete Workout
+              Cancel
             </Button>
-          </div>
-        </form>
-      </CardContent>
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete the workout "{workout.name}". This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
+            <Button
+              type="submit"
               disabled={isLoading}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isLoading ? 'Deleting...' : 'Delete'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </Card>
+              {isLoading ? 'Updating...' : 'Update Workout'}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   )
 }
