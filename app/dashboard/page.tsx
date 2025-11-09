@@ -154,9 +154,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                         </span>
                       </div>
                       <div className="pt-4">
-                        <Button variant="outline" className="w-full">
-                          View Details
-                        </Button>
+                        <Link href={`/dashboard/workout/${workout.id}`}>
+                          <Button variant="outline" className="w-full">
+                            View Details
+                          </Button>
+                        </Link>
                       </div>
                     </CardContent>
                   </Card>
