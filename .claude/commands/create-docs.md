@@ -1,0 +1,1 @@
+建立一份新文件docs/$1.md用於強調這份專案的coding standards，此文件強調於：
