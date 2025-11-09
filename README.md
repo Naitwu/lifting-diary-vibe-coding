@@ -4,7 +4,7 @@
 
 ## 線上展示
 
-https://lifting-diary-vibe-coding-git-main-naitwus-projects.vercel.app
+https://lifting-diary-vibe-coding.vercel.app/
 
 ## 功能特色
 
